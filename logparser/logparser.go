@@ -20,12 +20,15 @@ type LogEntry struct {
 // Parse returns a parsed entry for a single Heroku syslog message delivered via
 // HTTPS.
 func Parse(b []byte) (*LogEntry, error) {
+	fmt.Println(b);
 	parser := logParser{
 		b:      b,
 		cursor: 0,
 		len:    len(b),
 	}
-	return parser.parse()
+	parsed := parser.parse()
+	fmt.Println(parsed);
+	return parsed
 }
 
 type logParser struct {
