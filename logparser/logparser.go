@@ -26,9 +26,9 @@ func Parse(b []byte) (*LogEntry, error) {
 		cursor: 0,
 		len:    len(b),
 	}
-	parsed := parser.parse()
+	parsed, err := parser.parse()
 	fmt.Println(parsed)
-	return parsed
+	return parsed, err
 }
 
 type logParser struct {
