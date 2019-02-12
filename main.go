@@ -151,7 +151,8 @@ func (app *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = app.processMessages(r.Body, l, txn); err != nil {
+	herokuApplicationName := r.URL.Query().Get("app")
+	if err = app.processMessages(r.Body, herokuApplicationName, l, txn); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		honeybadger.Notify(err)
 		log.Println(err)
@@ -194,7 +195,7 @@ func (app *App) logger(appName string) (l logger, err error) {
 	return l, err
 }
 
-func (app *App) processMessages(r io.Reader, l logger, txn newrelic.Transaction) error {
+func (app *App) processMessages(r io.Reader, appName string, l logger, txn newrelic.Transaction) error {
 	if txn != nil {
 		defer newrelic.StartSegment(txn, "processMessages").End()
 	}
@@ -225,7 +226,7 @@ func (app *App) processMessages(r io.Reader, l logger, txn newrelic.Transaction)
 		if !eof {
 			m = m[:len(m)-1]
 		}
-		l.Log(entry.Time, m)
+		l.Log(entry.Time, "[" + appName + "] " + m)
 		if eof {
 			break
 		}
